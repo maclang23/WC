@@ -448,6 +448,7 @@
             return s1 < s2 ? csvMatch['Player 1'] : csvMatch['Player 2'];
         }
 
+        // ------------------ TREE BUILD ARCHITECTURE ------------------ //
         function buildPlayoffTree(rows) {
             let globalMatchNum = 103; 
 
@@ -585,6 +586,7 @@
             document.getElementById('col-f').innerHTML = createMatchMarkup(finalMatch) + champMarkup;
         }
 
+        // ------------------ RENDER GROUPS WITH FIXED COLUMNS ------------------ //
         function renderGroups() {
             const grid = document.getElementById('groups-grid');
             grid.innerHTML = "";
@@ -594,73 +596,87 @@
                 const groupLink = TRACKER_LINKS[gName] || TRACKER_LINKS["DEFAULT"] || "#";
 
                 let rowsHtml = players.map((p, i) => {
-                    let pill = i === 0 ? 'bg-[#d4af37] text-slate-950 font-black' : (i === 1 ? 'bg-slate-700 text-white font-bold' : 'text-gray-500');
+                    let pill = i === 0 ? 'bg-[#d4af37] text-slate-950 font-black' : (i === 1 ? 'bg-slate-700 text-white font-bold' : 'bg-slate-900 text-gray-500');
                     return `
-                        <tr class="${i < 2 ? 'bg-white/[0.02]' : ''}">
-                            <td class="py-2 px-1 text-center"><span class="inline-block w-5 h-5 text-[11px] rounded-full ${pill}">${i+1}</span></td>
-                            <td class="py-2 px-2 font-bold max-w-[130px] truncate" title="${p.name}">${p.name}</td>
-                            <td class="py-2 px-1 text-center text-gray-400">${p.mp}</td>
-                            <td class="py-2 px-1 text-center font-black text-white">${p.points}</td>
-                            <td class="py-2 px-2 text-right font-mono text-xs text-gray-400">${formatVal(p.distance)}<span class="text-[10px] text-gray-600 ml-0.5">${currentUnit}</span></td>
+                        <tr class="hover:bg-white/[0.01] transition-all border-b border-slate-900/30">
+                            <td class="py-2.5 px-2 text-center">
+                                <span class="inline-block w-5 h-5 leading-5 rounded-full text-[10px] text-center ${pill}">${i + 1}</span>
+                            </td>
+                            <td class="py-2.5 px-2 font-bold text-gray-200 truncate" title="${p.name}">${p.name}</td>
+                            <td class="py-2.5 px-1 text-center font-mono text-gray-400">${p.mp}</td>
+                            <td class="py-2.5 px-1 text-center font-mono text-emerald-500">${p.wins}</td>
+                            <td class="py-2.5 px-1 text-center font-mono text-gray-500">${p.draws}</td>
+                            <td class="py-2.5 px-1 text-center font-mono text-rose-500">${p.losses}</td>
+                            <td class="py-2.5 px-1 text-center font-mono font-bold text-white">${p.points}</td>
+                            <td class="py-2.5 pr-2 text-right font-mono text-xs text-gray-300 bg-black/10">${formatVal(p.distance)}</td>
                         </tr>
                     `;
                 }).join('');
 
                 grid.innerHTML += `
-                    <div class="bg-[#1b263b] rounded-xl border border-slate-800 p-5 shadow-xl hover:border-slate-700 transition-all flex flex-col justify-between">
+                    <div class="bg-[#1b263b] rounded-xl border border-slate-800 p-4 shadow-xl flex flex-col justify-between">
                         <div>
                             <div class="flex justify-between items-center mb-3 border-b border-slate-800 pb-2">
-                                <h3 class="text-lg font-black uppercase tracking-wider text-[#d4af37]">${gName}</h3>
-                                <a href="${groupLink}" target="_blank" class="text-[10px] bg-slate-900 border border-slate-700 hover:border-[#d4af37] hover:text-[#d4af37] px-2.5 py-1 rounded font-bold uppercase tracking-wider text-gray-400 transition-all">📊 Tracker</a>
+                                <h3 class="text-md font-black text-[#d4af37] uppercase tracking-wide">${gName}</h3>
+                                <a href="${groupLink}" target="_blank" class="text-[10px] text-amber-400/80 hover:text-amber-400 font-bold tracking-wider uppercase flex items-center space-x-1 border border-amber-500/20 px-2 py-0.5 rounded bg-amber-500/5 transition-all">
+                                    <span>🔗 Tracker</span>
+                                </a>
                             </div>
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="text-[10px] tracking-widest uppercase text-gray-500 border-b border-slate-900">
-                                        <th class="py-1 px-1 text-center w-8">#</th>
-                                        <th class="py-1 px-2">Player</th>
-                                        <th class="py-1 px-1 text-center w-8">P</th>
-                                        <th class="py-1 px-1 text-center w-8">Pts</th>
-                                        <th class="py-1 px-2 text-right">Dist</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="text-xs divide-y divide-slate-900/40">
-                                    ${rowsHtml}
-                                </tbody>
-                            </table>
+                            <div class="overflow-x-auto">
+                                <table class="w-full table-fixed text-left border-collapse">
+                                    <thead>
+                                        <tr class="border-b border-slate-800 text-[10px] tracking-wider uppercase text-gray-400 font-bold">
+                                            <th class="py-2 px-2 w-9 text-center">#</th>
+                                            <th class="py-2 px-2">Player</th>
+                                            <th class="py-2 px-1 w-8 text-center" title="Matches Played">P</th>
+                                            <th class="py-2 px-1 w-8 text-center" title="Wins">W</th>
+                                            <th class="py-2 px-1 w-8 text-center" title="Draws">D</th>
+                                            <th class="py-2 px-1 w-8 text-center" title="Losses">L</th>
+                                            <th class="py-2 px-1 w-9 text-center" title="Points">Pts</th>
+                                            <th class="py-2 pr-2 w-20 text-right">Dist</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-xs divide-y divide-slate-800/30">
+                                        ${rowsHtml}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 `;
             });
         }
 
+        // ------------------ RENDER WILDCARDS ------------------ //
         function renderWildcards() {
             const tbody = document.getElementById('wildcard-table-body');
             tbody.innerHTML = "";
 
-            appState.runnersUp.forEach((p, i) => {
-                const isSafe = i < 15;
-                const statusBadge = isSafe 
-                    ? '<span class="bg-emerald-950/50 text-emerald-400 border border-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Advance</span>' 
-                    : '<span class="bg-red-950/50 text-red-400 border border-red-900 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Eliminated</span>';
-
+            appState.runnersUp.forEach((p, idx) => {
+                const rank = idx + 1;
+                const isAdvancing = rank <= 15;
+                const statusBadge = isAdvancing 
+                    ? `<span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-bold uppercase border border-emerald-500/20">Qualified</span>` 
+                    : `<span class="px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 text-[10px] font-bold uppercase border border-rose-500/20">Eliminated</span>`;
+                
                 tbody.innerHTML += `
-                    <tr class="hover:bg-white/[0.01] transition-all ${isSafe ? 'bg-emerald-500/[0.01]' : ''}">
-                        <td class="py-3 px-3 font-mono font-bold">${i + 1}</td>
-                        <td class="py-3 px-3 font-bold text-white">${p.name}</td>
-                        <td class="py-3 px-3 text-center text-gray-400 font-medium">${p.group.replace('Group ', '')}</td>
-                        <td class="py-3 px-3 text-center font-black text-[#d4af37]">${p.points}</td>
-                        <td class="py-3 px-3 text-right font-mono text-gray-300">${formatVal(p.distance)}</td>
-                        <td class="py-3 px-4 text-center">${statusBadge}</td>
+                    <tr class="hover:bg-white/[0.01] border-b border-slate-900 transition-all ${isAdvancing ? 'bg-emerald-500/[0.01]' : ''}">
+                        <td class="py-3 px-3 font-mono font-bold text-gray-400">${rank}</td>
+                        <td class="py-3 px-3 font-bold text-white truncate max-w-[180px]" title="${p.name}">${p.name}</td>
+                        <td class="py-3 px-3 text-center text-gray-400 uppercase tracking-wider text-xs">${p.group}</td>
+                        <td class="py-3 px-3 text-center font-mono font-black text-white">${p.points}</td>
+                        <td class="py-3 px-3 text-right font-mono text-gray-300 bg-black/10">${formatVal(p.distance)}</td>
+                        <td class="py-3 px-4 text-center whitespace-nowrap">${statusBadge}</td>
                     </tr>
                 `;
             });
         }
 
+        // ------------------ RENDER MATCH LOGS ------------------ //
         function renderMatches() {
             const tbody = document.getElementById('matches-table-body');
             tbody.innerHTML = "";
 
-            // Display in reverse chronological order if desired, or matching order
             appState.rawMatches.forEach(m => {
                 const rnd = m['Round'];
                 const grp = m['Group'];
@@ -669,7 +685,7 @@
                 const s1 = m['Player 1 Score'];
                 const s2 = m['Player 2 Score'];
                 
-                // EDITED: Fallback check to match "Date Completed", "Date", "date", or "DATE"
+                // Fallback check to safely parse date variant descriptors
                 const dt = m['Date Completed'] || m['Date'] || m['date'] || m['DATE'] || '—';
 
                 if (!p1 || !p2) return;
