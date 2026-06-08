@@ -36,13 +36,13 @@
         <h1 class="text-4xl md:text-5xl font-black tracking-widest uppercase text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-300 drop-shadow">
             🏆 2026 TPG WORLD CUP
         </h1>
-        <p class="text-xs md:text-sm text-[#d4af37] mt-2 tracking-[0.3em] font-bold uppercase">Live Tournament Centre & Bracket Projections</p>
+        <p class="text-xs md:text-sm text-[#d4af37] mt-2 tracking-[0.3em] font-bold uppercase">Live Tournament Centre & Standings</p>
     </header>
 
     <div class="bg-[#0b1320] flex justify-center border-b border-slate-800 shadow-inner">
         <nav class="flex space-x-1 p-2 overflow-x-auto max-w-full">
-            <button onclick="switchTab('bracket')" id="tab-bracket" class="px-5 py-2.5 rounded-md text-sm font-bold bg-[#d4af37] text-slate-950 transition-all shadow shadow-amber-500/20 whitespace-nowrap">🏆 Playoff Bracket</button>
-            <button onclick="switchTab('groups')" id="tab-groups" class="px-5 py-2.5 rounded-md text-sm font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap">📋 Group Standings</button>
+            <button onclick="switchTab('groups')" id="tab-groups" class="px-5 py-2.5 rounded-md text-sm font-bold bg-[#d4af37] text-slate-950 transition-all shadow shadow-amber-500/20 whitespace-nowrap">📋 Group Standings</button>
+            <button onclick="switchTab('bracket')" id="tab-bracket" class="px-5 py-2.5 rounded-md text-sm font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap">🏆 Playoff Bracket</button>
             <button onclick="switchTab('wildcard')" id="tab-wildcard" class="px-5 py-2.5 rounded-md text-sm font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap">⭐ 2nd Place Race</button>
             <button onclick="switchTab('matches')" id="tab-matches" class="px-5 py-2.5 rounded-md text-sm font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap">⚽ Match Logs</button>
         </nav>
@@ -60,10 +60,14 @@
             <p id="error-text" class="text-xs text-red-300"></p>
         </div>
 
+        <section id="content-groups" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="groups-grid"></div>
+        </section>
+
         <section id="content-bracket" class="tab-content hidden">
             <div class="mb-6 text-center">
                 <span class="inline-block bg-slate-900/80 border border-slate-800 px-4 py-2 rounded-full text-xs text-gray-400">
-                    💡 <strong class="text-white">Projections:</strong> Slots display live predictions until official playoff entries (<code class="text-[#d4af37]">R32, R16, QF, SF, F</code>) are written to the CSV.
+                    💡 <strong class="text-white">Projections:</strong> The Round of 32 displays live projections based on group standings. Subsequent rounds will populate automatically as matches conclude.
                 </span>
             </div>
             
@@ -99,10 +103,6 @@
             </div>
         </section>
 
-        <section id="content-groups" class="tab-content hidden">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="groups-grid"></div>
-        </section>
-
         <section id="content-wildcard" class="tab-content hidden max-w-4xl mx-auto">
             <div class="bg-[#1b263b] rounded-xl border border-slate-800 p-6 shadow-2xl">
                 <h2 class="text-2xl font-black text-[#d4af37] mb-2 uppercase tracking-wide border-b border-slate-800 pb-3">Runner-Up Wildcard Table</h2>
@@ -115,7 +115,7 @@
                                 <th class="py-3 px-3">Player</th>
                                 <th class="py-3 px-3 text-center">Group</th>
                                 <th class="py-3 px-3 text-center">Points</th>
-                                <th class="py-3 px-3 text-right">Total Distance</th>
+                                <th class="py-3 px-3 text-right">Total Dist (km)</th>
                                 <th class="py-3 px-4 text-center">Status</th>
                             </tr>
                         </thead>
@@ -135,7 +135,7 @@
                                 <th class="py-3 px-3">Date</th>
                                 <th class="py-3 px-3">Stage</th>
                                 <th class="py-3 text-right pr-4">Player 1</th>
-                                <th class="py-3 text-center bg-black/30 w-28">Distance Result</th>
+                                <th class="py-3 text-center bg-black/30 w-28">Score (km)</th>
                                 <th class="py-3 text-left pl-4">Player 2</th>
                             </tr>
                         </thead>
@@ -152,7 +152,7 @@
     </footer>
 
     <script>
-        // Adjust filename if needed
+        // Data source mapping
         const CSV_FILE_PATH = "2026 TPG World Cup - Schedule and Results (1).csv";
 
         let appState = {
@@ -206,7 +206,7 @@
                 const csvText = await response.text();
                 processData(csvText);
                 document.getElementById('loading').classList.add('hidden');
-                switchTab('bracket');
+                switchTab('groups'); // Group Standings shown by default
             } catch (err) {
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('error-container').classList.remove('hidden');
@@ -377,11 +377,11 @@
             }
         }
 
-        function findPlayoffMatchInCSV(rows, roundTag, p1Proj, p2Proj) {
+        function findPlayoffMatchInCSV(rows, roundTag, p1Candidate, p2Candidate) {
             // Find a row matching either expected candidate name
             return rows.find(r => r['Round'] === roundTag && (
-                r['Player 1'] === p1Proj || r['Player 2'] === p1Proj ||
-                r['Player 1'] === p2Proj || r['Player 2'] === p2Proj
+                r['Player 1'] === p1Candidate || r['Player 2'] === p1Candidate ||
+                r['Player 1'] === p2Candidate || r['Player 2'] === p2Candidate
             ));
         }
 
@@ -394,8 +394,11 @@
         }
 
         function buildPlayoffTree(rows) {
+            let globalMatchNum = 103; // Group Stage ended on Match 102
+
             // Step 1: Round of 32
             appState.bracket.R32 = R32_TEMPLATE.map(t => {
+                const currentMatchNum = globalMatchNum++;
                 const info1 = resolveSlot(t.p1);
                 const info2 = resolveSlot(t.p2);
                 
@@ -413,26 +416,28 @@
                     winner = getMatchWinner(csvMatch);
                     isOfficial = true;
                 } else {
-                    winner = info1.current; // Projection default fallback
+                    // Winner text falls back to the Match Number for path routing
+                    winner = `Winner Match ${currentMatchNum}`; 
                 }
 
-                return { p1: p1_display, p2: p2_display, s1, s2, winner, isOfficial };
+                return { p1: p1_display, p2: p2_display, s1, s2, winner, isOfficial, matchNum: currentMatchNum, isR32: true };
             });
 
             // Intermediate structural generator closure for subsequent rounds
             const processSubsequentRound = (currentRoundTag, prevRoundList, count) => {
                 let matches = [];
                 for (let i = 0; i < count; i++) {
+                    const currentMatchNum = globalMatchNum++;
                     const leftParent = prevRoundList[i * 2];
                     const rightParent = prevRoundList[i * 2 + 1];
 
-                    const p1Proj = leftParent ? leftParent.winner : `Winner M${i*2+1}`;
-                    const p2Proj = rightParent ? rightParent.winner : `Winner M${i*2+2}`;
+                    const p1Text = (leftParent && leftParent.isOfficial) ? leftParent.winner : `Winner Match ${leftParent.matchNum}`;
+                    const p2Text = (rightParent && rightParent.isOfficial) ? rightParent.winner : `Winner Match ${rightParent.matchNum}`;
 
-                    const csvMatch = findPlayoffMatchInCSV(rows, currentRoundTag, p1Proj, p2Proj);
+                    const csvMatch = findPlayoffMatchInCSV(rows, currentRoundTag, p1Text, p2Text);
 
-                    let p1_display = leftParent && leftParent.isOfficial ? p1Proj : `Winner Match ${i*2+1} (Proj: ${p1Proj})`;
-                    let p2_display = rightParent && rightParent.isOfficial ? p2Proj : `Winner Match ${i*2+2} (Proj: ${p2Proj})`;
+                    let p1_display = p1Text;
+                    let p2_display = p2Text;
                     let s1 = "", s2 = "", winner = null, isOfficial = false;
 
                     if (csvMatch) {
@@ -443,10 +448,10 @@
                         winner = getMatchWinner(csvMatch);
                         isOfficial = true;
                     } else {
-                        winner = p1Proj;
+                        winner = `Winner Match ${currentMatchNum}`;
                     }
 
-                    matches.push({ p1: p1_display, p2: p2_display, s1, s2, winner, isOfficial });
+                    matches.push({ p1: p1_display, p2: p2_display, s1, s2, winner, isOfficial, matchNum: currentMatchNum, isR32: false });
                 }
                 return matches;
             };
@@ -457,16 +462,24 @@
             appState.bracket.F = processSubsequentRound("F", appState.bracket.SF, 1);
         }
 
-        function createMatchMarkup(m, index) {
+        function createMatchMarkup(m) {
             const hasScore = m.s1 !== "" && m.s2 !== "";
             const isP1Winner = hasScore && parseFloat(m.s1) < parseFloat(m.s2);
             const isP2Winner = hasScore && parseFloat(m.s2) < parseFloat(m.s1);
 
+            // Decide badge logic
+            let statusBadge = '<span class="text-gray-600">Pending</span>';
+            if (m.isOfficial) {
+                statusBadge = '<span class="text-[#d4af37]">Live Data</span>';
+            } else if (m.isR32) {
+                statusBadge = '<span>Projected</span>';
+            }
+
             return `
                 <div class="bg-[#1b263b] border ${m.isOfficial ? 'border-amber-500/40' : 'border-slate-800'} rounded-lg p-3 shadow-md text-xs space-y-2">
                     <div class="text-[10px] text-gray-500 font-bold flex justify-between uppercase">
-                        <span>Match #${index + 1}</span>
-                        ${m.isOfficial ? '<span class="text-[#d4af37]">Live Data</span>' : '<span>Projected</span>'}
+                        <span>Match #${m.matchNum}</span>
+                        ${statusBadge}
                     </div>
                     <div class="space-y-1.5">
                         <div class="flex justify-between items-center ${isP1Winner ? 'font-black text-[#d4af37]' : ''}">
@@ -483,10 +496,10 @@
         }
 
         function renderTree() {
-            document.getElementById('col-r32').innerHTML = appState.bracket.R32.map((m, i) => createMatchMarkup(m, i)).join('');
-            document.getElementById('col-r16').innerHTML = appState.bracket.R16.map((m, i) => createMatchMarkup(m, i)).join('');
-            document.getElementById('col-qf').innerHTML = appState.bracket.QF.map((m, i) => createMatchMarkup(m, i)).join('');
-            document.getElementById('col-sf').innerHTML = appState.bracket.SF.map((m, i) => createMatchMarkup(m, i)).join('');
+            document.getElementById('col-r32').innerHTML = appState.bracket.R32.map(m => createMatchMarkup(m)).join('');
+            document.getElementById('col-r16').innerHTML = appState.bracket.R16.map(m => createMatchMarkup(m)).join('');
+            document.getElementById('col-qf').innerHTML = appState.bracket.QF.map(m => createMatchMarkup(m)).join('');
+            document.getElementById('col-sf').innerHTML = appState.bracket.SF.map(m => createMatchMarkup(m)).join('');
             
             const finalMatch = appState.bracket.F[0];
             let champMarkup = `
@@ -495,7 +508,7 @@
                     <div class="text-lg font-black text-white truncate">${finalMatch && finalMatch.s1 !== "" && finalMatch.s2 !== "" ? finalMatch.winner : 'TBD'}</div>
                 </div>
             `;
-            document.getElementById('col-f').innerHTML = createMatchMarkup(finalMatch, 0) + champMarkup;
+            document.getElementById('col-f').innerHTML = createMatchMarkup(finalMatch) + champMarkup;
         }
 
         function renderGroups() {
@@ -512,7 +525,7 @@
                             <td class="py-2 px-2 font-bold max-w-[130px] truncate" title="${p.name}">${p.name}</td>
                             <td class="py-2 px-1 text-center text-gray-400">${p.mp}</td>
                             <td class="py-2 px-1 text-center font-black text-white">${p.points}</td>
-                            <td class="py-2 px-2 text-right font-mono text-xs text-gray-400">${p.distance.toFixed(1)}m</td>
+                            <td class="py-2 px-2 text-right font-mono text-xs text-gray-400">${p.distance.toFixed(1)}km</td>
                         </tr>
                     `;
                 }).join('');
@@ -549,7 +562,7 @@
                         <td class="py-3 px-3 font-bold">${p.name}</td>
                         <td class="py-3 px-3 text-center text-gray-400 font-semibold">${p.group}</td>
                         <td class="py-3 px-3 text-center font-black text-white">${p.points}</td>
-                        <td class="py-3 px-3 text-right font-mono text-gray-300">${p.distance.toFixed(1)}m</td>
+                        <td class="py-3 px-3 text-right font-mono text-gray-300">${p.distance.toFixed(1)}km</td>
                         <td class="py-3 px-4 text-center">
                             ${advances 
                                 ? '<span class="bg-emerald-950/60 text-emerald-400 px-2.5 py-0.5 rounded-full font-bold text-xs border border-emerald-800">Advancing</span>' 
