@@ -596,120 +596,117 @@
                 const groupLink = TRACKER_LINKS[gName] || TRACKER_LINKS["DEFAULT"] || "#";
 
                 let rowsHtml = players.map((p, i) => {
-                    let pill = i === 0 ? 'bg-[#d4af37] text-slate-950 font-black' : (i === 1 ? 'bg-slate-700 text-white font-bold' : 'bg-slate-900 text-gray-500');
+                    let placementClass = "text-gray-400";
+                    if (i === 0) placementClass = "text-emerald-400 font-extrabold";
+                    else if (i === 1) placementClass = "text-amber-400 font-semibold";
+
                     return `
-                        <tr class="hover:bg-white/[0.01] transition-all border-b border-slate-900/30">
-                            <td class="py-2.5 px-2 text-center">
-                                <span class="inline-block w-5 h-5 leading-5 rounded-full text-[10px] text-center ${pill}">${i + 1}</span>
-                            </td>
-                            <td class="py-2.5 px-2 font-bold text-gray-200 truncate" title="${p.name}">${p.name}</td>
-                            <td class="py-2.5 px-1 text-center font-mono text-gray-400">${p.mp}</td>
-                            <td class="py-2.5 px-1 text-center font-mono text-emerald-500">${p.wins}</td>
-                            <td class="py-2.5 px-1 text-center font-mono text-gray-500">${p.draws}</td>
-                            <td class="py-2.5 px-1 text-center font-mono text-rose-500">${p.losses}</td>
-                            <td class="py-2.5 px-1 text-center font-mono font-bold text-white">${p.points}</td>
-                            <td class="py-2.5 pr-2 text-right font-mono text-xs text-gray-300 bg-black/10">${formatVal(p.distance)}</td>
+                        <tr class="border-b border-slate-900/40 hover:bg-slate-800/30 transition-colors">
+                            <td class="py-2.5 px-3 font-mono text-center ${placementClass}">${i + 1}</td>
+                            <td class="py-2.5 px-2 font-medium truncate max-w-[120px]" title="${p.name}">${p.name}</td>
+                            <td class="py-2.5 px-2 font-bold text-center text-white">${p.points}</td>
+                            <td class="py-2.5 px-3 font-mono text-right text-gray-300">${formatVal(p.distance)}</td>
                         </tr>
                     `;
                 }).join('');
 
-                grid.innerHTML += `
-                    <div class="bg-[#1b263b] rounded-xl border border-slate-800 p-4 shadow-xl flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-center mb-3 border-b border-slate-800 pb-2">
-                                <h3 class="text-md font-black text-[#d4af37] uppercase tracking-wide">${gName}</h3>
-                                <a href="${groupLink}" target="_blank" class="text-[10px] text-amber-400/80 hover:text-amber-400 font-bold tracking-wider uppercase flex items-center space-x-1 border border-amber-500/20 px-2 py-0.5 rounded bg-amber-500/5 transition-all">
-                                    <span>🔗 Tracker</span>
-                                </a>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full table-fixed text-left border-collapse">
-                                    <thead>
-                                        <tr class="border-b border-slate-800 text-[10px] tracking-wider uppercase text-gray-400 font-bold">
-                                            <th class="py-2 px-2 w-9 text-center">#</th>
-                                            <th class="py-2 px-2">Player</th>
-                                            <th class="py-2 px-1 w-8 text-center" title="Matches Played">P</th>
-                                            <th class="py-2 px-1 w-8 text-center" title="Wins">W</th>
-                                            <th class="py-2 px-1 w-8 text-center" title="Draws">D</th>
-                                            <th class="py-2 px-1 w-8 text-center" title="Losses">L</th>
-                                            <th class="py-2 px-1 w-9 text-center" title="Points">Pts</th>
-                                            <th class="py-2 pr-2 w-20 text-right">Dist</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="text-xs divide-y divide-slate-800/30">
-                                        ${rowsHtml}
-                                    </tbody>
-                                </table>
-                            </div>
+                const cardHtml = `
+                    <div class="bg-[#1b263b] rounded-xl border border-slate-800 shadow-xl overflow-hidden flex flex-col group hover:border-amber-500/30 transition-all duration-300">
+                        <div class="bg-gradient-to-r from-slate-900 to-[#1b263b] px-4 py-3.5 border-b border-slate-800 flex justify-between items-center">
+                            <h3 class="font-black tracking-wider text-base text-[#d4af37] uppercase">${gName}</h3>
+                            <a href="${groupLink}" target="_blank" class="text-[11px] bg-slate-800 hover:bg-[#d4af37] text-gray-300 hover:text-slate-950 px-2.5 py-1 rounded border border-slate-700 hover:border-transparent font-bold transition-all flex items-center gap-1">
+                                🗺️ Map Tracker
+                            </a>
+                        </div>
+                        <div class="p-2 flex-grow overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-800 text-[10px] tracking-wider uppercase text-gray-400 font-bold">
+                                        <th class="py-2 px-3 text-center w-8">#</th>
+                                        <th class="py-2 px-2">Player</th>
+                                        <th class="py-2 px-2 text-center w-10">PTS</th>
+                                        <th class="py-2 px-3 text-right w-24">DIST (<span class="unit-label">${currentUnit}</span>)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rowsHtml}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 `;
+                grid.insertAdjacentHTML('beforeend', cardHtml);
             });
         }
 
-        // ------------------ RENDER WILDCARDS ------------------ //
         function renderWildcards() {
             const tbody = document.getElementById('wildcard-table-body');
-            tbody.innerHTML = "";
+            tbody.innerHTML = appState.runnersUp.map((p, i) => {
+                const rank = i + 1;
+                let statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-950 text-red-400 border border-red-900">Eliminated</span>';
+                let rowBg = 'bg-transparent';
 
-            appState.runnersUp.forEach((p, idx) => {
-                const rank = idx + 1;
-                const isAdvancing = rank <= 15;
-                const statusBadge = isAdvancing 
-                    ? `<span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-bold uppercase border border-emerald-500/20">Qualified</span>` 
-                    : `<span class="px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 text-[10px] font-bold uppercase border border-rose-500/20">Eliminated</span>`;
-                
-                tbody.innerHTML += `
-                    <tr class="hover:bg-white/[0.01] border-b border-slate-900 transition-all ${isAdvancing ? 'bg-emerald-500/[0.01]' : ''}">
-                        <td class="py-3 px-3 font-mono font-bold text-gray-400">${rank}</td>
-                        <td class="py-3 px-3 font-bold text-white truncate max-w-[180px]" title="${p.name}">${p.name}</td>
-                        <td class="py-3 px-3 text-center text-gray-400 uppercase tracking-wider text-xs">${p.group}</td>
-                        <td class="py-3 px-3 text-center font-mono font-black text-white">${p.points}</td>
-                        <td class="py-3 px-3 text-right font-mono text-gray-300 bg-black/10">${formatVal(p.distance)}</td>
-                        <td class="py-3 px-4 text-center whitespace-nowrap">${statusBadge}</td>
+                if (rank <= 15) {
+                    statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-900">Advances</span>';
+                    rowBg = 'bg-emerald-500/[0.02]';
+                }
+
+                return `
+                    <tr class="${rowBg} hover:bg-slate-800/40 transition-colors">
+                        <td class="py-3 px-3 font-mono font-bold">${rank}</td>
+                        <td class="py-3 px-3 font-semibold text-white">${p.name}</td>
+                        <td class="py-3 px-3 text-center text-gray-400 font-medium">${p.group.replace("Group ", "")}</td>
+                        <td class="py-3 px-3 text-center font-bold text-[#d4af37]">${p.points}</td>
+                        <td class="py-3 px-3 text-right font-mono text-gray-300">${formatVal(p.distance)}</td>
+                        <td class="py-3 px-4 text-center">${statusBadge}</td>
                     </tr>
                 `;
-            });
+            }).join('');
         }
 
-        // ------------------ RENDER MATCH LOGS ------------------ //
         function renderMatches() {
             const tbody = document.getElementById('matches-table-body');
-            tbody.innerHTML = "";
+            
+            // Filter down to rows that represent concrete played or scheduled matches
+            const validMatches = appState.rawMatches.filter(r => r['Player 1'] && r['Player 2']);
 
-            appState.rawMatches.forEach(m => {
-                const rnd = m['Round'];
-                const grp = m['Group'];
-                const p1 = m['Player 1'];
-                const p2 = m['Player 2'];
-                const s1 = m['Player 1 Score'];
-                const s2 = m['Player 2 Score'];
-                
-                // Fallback check to safely parse date variant descriptors
-                const dt = m['Date Completed'] || m['Date'] || m['date'] || m['DATE'] || '—';
+            if (validMatches.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-gray-500 italic">No matches tracked in CSV yet.</td></tr>`;
+                return;
+            }
 
-                if (!p1 || !p2) return;
-
-                const stageText = rnd === 'Group' ? grp : rnd;
+            tbody.innerHTML = validMatches.map(r => {
+                const s1 = r['Player 1 Score'];
+                const s2 = r['Player 2 Score'];
                 const hasScore = s1 !== "" && s2 !== "";
                 
-                const scoreDisplay = hasScore 
-                    ? `<span class="text-white font-mono font-bold">${formatScoreStr(s1)}</span> <span class="text-gray-600 font-bold px-1">:</span> <span class="text-white font-mono font-bold">${formatScoreStr(s2)}</span>`
-                    : '<span class="text-gray-600 tracking-widest text-[10px] font-bold uppercase">vs</span>';
+                let scoreDisplay = "vs";
+                let p1Class = "text-gray-300";
+                let p2Class = "text-gray-300";
 
-                const isP1Winner = hasScore && parseFloat(s1) < parseFloat(s2);
-                const isP2Winner = hasScore && parseFloat(s2) < parseFloat(s1);
+                if (hasScore) {
+                    const v1 = parseFloat(s1);
+                    const v2 = parseFloat(s2);
+                    scoreDisplay = `${formatScoreStr(s1)} - ${formatScoreStr(s2)}`;
+                    
+                    if (!isNaN(v1) && !isNaN(v2)) {
+                        if (v1 < v2) p1Class = "text-[#d4af37] font-black";
+                        else if (v2 < v1) p2Class = "text-[#d4af37] font-black";
+                    }
+                }
 
-                tbody.innerHTML += `
-                    <tr class="hover:bg-white/[0.01] border-b border-slate-900/50 transition-all">
-                        <td class="py-3 px-3 text-xs text-gray-500 whitespace-nowrap">${dt}</td>
-                        <td class="py-3 px-3 text-xs text-gray-400 font-bold uppercase tracking-wider">${stageText}</td>
-                        <td class="py-3 text-right pr-4 font-medium ${isP1Winner ? 'text-[#d4af37] font-black' : 'text-gray-300'} truncate max-w-[150px]" title="${p1}">${p1}</td>
-                        <td class="py-2 text-center bg-black/10 w-28 whitespace-nowrap">${scoreDisplay}</td>
-                        <td class="py-3 text-left pl-4 font-medium ${isP2Winner ? 'text-[#d4af37] font-black' : 'text-gray-300'} truncate max-w-[150px]" title="${p2}">${p2}</td>
+                let stageLabel = r['Round'] === "Group" ? `Group ${r['Group'] || ''}` : r['Round'];
+
+                return `
+                    <tr class="hover:bg-slate-800/20 transition-colors">
+                        <td class="py-3 px-3 text-xs text-gray-500 font-medium whitespace-nowrap">${r['Date'] || 'TBD'}</td>
+                        <td class="py-3 px-3 text-xs text-gray-400 font-bold uppercase tracking-wider">${stageLabel}</td>
+                        <td class="py-3 text-right pr-4 text-sm ${p1Class} truncate max-w-[160px]" title="${r['Player 1']}">${r['Player 1']}</td>
+                        <td class="py-3 text-center bg-black/20 font-mono text-xs text-white font-bold tracking-wider whitespace-nowrap">${scoreDisplay}</td>
+                        <td class="py-3 text-left pl-4 text-sm ${p2Class} truncate max-w-[160px]" title="${r['Player 2']}">${r['Player 2']}</td>
                     </tr>
                 `;
-            });
+            }).join('');
         }
     </script>
 </body>
