@@ -47,10 +47,10 @@
 
     <div class="bg-[#0b1320] flex justify-center border-b border-slate-800 shadow-inner">
         <nav class="flex space-x-1 p-2 overflow-x-auto max-w-full">
-            <button onclick="switchTab('groups')" id="tab-groups" class="px-5 py-2.5 rounded-md text-sm font-bold bg-[#d4af37] text-slate-950 transition-all shadow shadow-amber-500/20 whitespace-nowrap">📋 Group Standings</button>
-            <button onclick="switchTab('bracket')" id="tab-bracket" class="px-5 py-2.5 rounded-md text-sm font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap">🏆 Playoff Bracket</button>
-            <button onclick="switchTab('wildcard')" id="tab-wildcard" class="px-5 py-2.5 rounded-md text-sm font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap">⭐ 2nd Place Table</button>
-            <button onclick="switchTab('matches')" id="tab-matches" class="px-5 py-2.5 rounded-md text-sm font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap">⚽ Match Logs</button>
+            <button onclick="switchTab('groups')" id="tab-groups" class="px-5 py-2.5 rounded-md text-sm font-bold bg-[#d4af37] text-slate-950 transition-all shadow shadow-amber-500/20 whitespace-nowrap">Group Standings</button>
+            <button onclick="switchTab('bracket')" id="tab-bracket" class="px-5 py-2.5 rounded-md text-sm font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap">Playoff Bracket</button>
+            <button onclick="switchTab('wildcard')" id="tab-wildcard" class="px-5 py-2.5 rounded-md text-sm font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap">2nd Place Table</button>
+            <button onclick="switchTab('matches')" id="tab-matches" class="px-5 py-2.5 rounded-md text-sm font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap">Match Logs</button>
         </nav>
     </div>
 
@@ -73,7 +73,7 @@
         <section id="content-bracket" class="tab-content hidden">
             <div class="mb-6 text-center">
                 <span class="inline-block bg-slate-900/80 border border-slate-800 px-4 py-2 rounded-full text-xs text-gray-400">
-                    💡 <strong class="text-white">Projections:</strong> The Round of 32 displays live projections based on group standings. Subsequent rounds will populate as matches conclude.
+                    <strong class="text-white">Projections:</strong> The Round of 32 displays live projections based on group standings. Subsequent rounds will populate as matches conclude.
                 </span>
             </div>
             
@@ -615,7 +615,7 @@
                         <div class="bg-gradient-to-r from-slate-900 to-[#1b263b] px-4 py-3.5 border-b border-slate-800 flex justify-between items-center">
                             <h3 class="font-black tracking-wider text-base text-[#d4af37] uppercase">${gName}</h3>
                             <a href="${groupLink}" target="_blank" class="text-[11px] bg-slate-800 hover:bg-[#d4af37] text-gray-300 hover:text-slate-950 px-2.5 py-1 rounded border border-slate-700 hover:border-transparent font-bold transition-all flex items-center gap-1">
-                                🗺️ Map Tracker
+                                Map Tracker
                             </a>
                         </div>
                         <div class="p-2 flex-grow overflow-x-auto">
