@@ -695,8 +695,7 @@
                     }
                 }
 
-                let stageLabel = r['Round'] === "Group" ? `Group ${r['Group'] || ''}` : r['Round'];
-
+                let stageLabel = r['Round'] === "Group" ? `Group ${String(r['Group']).replace('Group', '').trim()}` : r['Round'];
                 return `
                     <tr class="hover:bg-slate-800/20 transition-colors">
                         <td class="py-3 px-3 text-xs text-gray-500 font-medium whitespace-nowrap">${r['Date'] || 'TBD'}</td>
