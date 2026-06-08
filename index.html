@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 TPG World Cup - Live Tournament Centre</title>
+    <title>2026 TPG World Cup</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         :root {
@@ -42,7 +42,7 @@
         <h1 class="text-4xl md:text-5xl font-black tracking-widest uppercase text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-300 drop-shadow">
             🏆 2026 TPG WORLD CUP
         </h1>
-        <p class="text-xs md:text-sm text-[#d4af37] mt-2 tracking-[0.3em] font-bold uppercase">Live Tournament Centre & Standings</p>
+        <p class="text-xs md:text-sm text-[#d4af37] mt-2 tracking-[0.3em] font-bold uppercase">Standings and Results</p>
     </header>
 
     <div class="bg-[#0b1320] flex justify-center border-b border-slate-800 shadow-inner">
@@ -58,7 +58,7 @@
         
         <div id="loading" class="text-center py-20">
             <div class="animate-spin inline-block w-12 h-12 border-4 border-t-transparent border-[#d4af37] rounded-full mb-4"></div>
-            <p class="text-gray-400 tracking-widest text-sm font-semibold">LOADING REAL-TIME CSV DATA...</p>
+            <p class="text-gray-400 tracking-widest text-sm font-semibold">LOADING CSV DATA...</p>
         </div>
 
         <div id="error-container" class="hidden max-w-2xl mx-auto bg-red-950/60 border border-red-700 text-red-200 p-5 rounded-xl text-center my-4 shadow-xl">
@@ -73,7 +73,7 @@
         <section id="content-bracket" class="tab-content hidden">
             <div class="mb-6 text-center">
                 <span class="inline-block bg-slate-900/80 border border-slate-800 px-4 py-2 rounded-full text-xs text-gray-400">
-                    💡 <strong class="text-white">Projections:</strong> The Round of 32 displays live projections based on group standings. Subsequent rounds will populate automatically as matches conclude.
+                    💡 <strong class="text-white">Projections:</strong> The Round of 32 displays live projections based on group standings. Subsequent rounds will populate as matches conclude.
                 </span>
             </div>
             
@@ -101,7 +101,7 @@
                     </div>
 
                     <div class="w-72 flex flex-col justify-between">
-                        <div class="text-center font-black tracking-wider text-xs uppercase text-[#d4af37] border-b border-slate-800 pb-2">Finals & Champion</div>
+                        <div class="text-center font-black tracking-wider text-xs uppercase text-[#d4af37] border-b border-slate-800 pb-2">Finals</div>
                         <div id="col-f" class="flex-grow flex flex-col justify-center space-y-8 py-4"></div>
                     </div>
 
@@ -154,30 +154,29 @@
     </main>
 
     <footer class="bg-[#0b1320] border-t border-slate-900 text-center py-5 text-xs text-gray-500 tracking-wider">
-        <p>2026 TPG World Cup Static Hub • Fueled via Github Pages CSV</p>
+        <p>2026 TPG World Cup • Hosted by @maclang23 on Chicago Geographer's Discord</p>
     </footer>
 
     <script>
-        // ------------------ TRACKER LINKS SETTINGS ------------------ //
-        // Replace these URLs with the actual tracker links for each group
+        // ------------------ TRACKER LINKS  ------------------ //
         const TRACKER_LINKS = {
-            "Group A": "https://example.com/tracker-a",
-            "Group B": "https://example.com/tracker-b",
-            "Group C": "https://example.com/tracker-c",
-            "Group D": "https://example.com/tracker-d",
-            "Group E": "https://example.com/tracker-e",
-            "Group F": "https://example.com/tracker-f",
-            "Group G": "https://example.com/tracker-g",
-            "Group H": "https://example.com/tracker-h",
-            "Group I": "https://example.com/tracker-i",
-            "Group J": "https://example.com/tracker-j",
-            "Group K": "https://example.com/tracker-k",
-            "Group L": "https://example.com/tracker-l",
-            "Group M": "https://example.com/tracker-m",
-            "Group N": "https://example.com/tracker-n",
-            "Group O": "https://example.com/tracker-o",
-            "Group P": "https://example.com/tracker-p",
-            "Group Q": "https://example.com/tracker-q",
+            "Group A": "https://www.google.com/maps/d/edit?mid=1i_AB0-txyHdWkZIg6euChU0Fk2cGP2k&usp=sharing",
+            "Group B": "https://www.google.com/maps/d/edit?mid=13d-_7K5nrDreaiclrSF4_w4TMVYuoQk&usp=sharing",
+            "Group C": "https://www.google.com/maps/d/edit?mid=18piWkBXnod_adDK7ZUfz7RzSD6U-1vs&usp=sharing",
+            "Group D": "https://www.google.com/maps/d/edit?mid=1HRILjK7XyLOWe6cw3UggVmCQmnrwCbs&usp=sharing",
+            "Group E": "https://www.google.com/maps/d/edit?mid=1jhoegtC6U3yOOm_SrDCGahnSw2FTa1s&usp=sharing",
+            "Group F": "https://www.google.com/maps/d/edit?mid=1G29zMQAVS0tt5ADSbbLphlp5U7X4MRk&usp=sharing",
+            "Group G": "https://www.google.com/maps/d/edit?mid=1ud1pfcrNerXMHlXQBUO1DabikR-dHEY&usp=sharing",
+            "Group H": "https://www.google.com/maps/d/edit?mid=11VwCrGoaMoyyzfJ2hrKpGFMt4IMyDAs&usp=sharing",
+            "Group I": "https://www.google.com/maps/d/edit?mid=12rHgpGVTLs733Ph8tdIpdHO0pHOoFJ8&usp=sharing",
+            "Group J": "https://www.google.com/maps/d/edit?mid=1HAVdZzY17ldS-jcvE6fpTG9X4yJHlAc&usp=sharing",
+            "Group K": "https://www.google.com/maps/d/edit?mid=1wdBqVsJd50t70w84rXqiFyQK3cJi0n8&usp=sharing",
+            "Group L": "https://www.google.com/maps/d/edit?mid=1-2t1Z87QThs1kFUVMe3pMFNReLdJGGU&usp=sharing",
+            "Group M": "https://www.google.com/maps/d/edit?mid=1DuFzPilmX1CApp-sdM_nWcTLiIuYru4&usp=sharing",
+            "Group N": "https://www.google.com/maps/d/edit?mid=1vArFiCWxi1mbPmnAgZmNDuMI28uiQmw&usp=sharing",
+            "Group O": "https://www.google.com/maps/d/edit?mid=1fxM7SFt7MS3SF8QiWH0kKM5eYV4-cBk&usp=sharing",
+            "Group P": "https://www.google.com/maps/d/edit?mid=11uEhkXHAc2l12ONFh6Z3kRX7HIRLsnU&usp=sharing",
+            "Group Q": "https://www.google.com/maps/d/edit?mid=1r66BqDvTbbwyCdmQFAXSjpYpp2VPv40&usp=sharing",
             "DEFAULT": "#" // Used if a specific group link isn't found
         };
         // ------------------------------------------------------------ //
@@ -425,11 +424,11 @@
         function resolveSlot(slotDesc) {
             if (slotDesc.type === 'winner') {
                 const gList = appState.groups[`Group ${slotDesc.group}`];
-                const projected = (gList && gList.length > 0) ? gList[0].name : `Winner ${slotDesc.group}`;
-                return { placeholder: `Winner ${slotDesc.group}`, current: projected };
+                const projected = (gList && gList.length > 0) ? gList[0].name : `Winner Group ${slotDesc.group}`;
+                return { placeholder: `Winner Group ${slotDesc.group}`, current: projected };
             } else {
                 const projectedObj = appState.runnersUp[slotDesc.rank - 1];
-                const projected = projectedObj ? `${projectedObj.name} (${projectedObj.group})` : `Runner-Up #${slotDesc.rank}`;
+                const projected = projectedObj ? projectedObj.name : `Runner-Up #${slotDesc.rank}`;
                 return { placeholder: `2nd Place #${slotDesc.rank}`, current: projected };
             }
         }
@@ -459,8 +458,8 @@
                 
                 const csvMatch = findPlayoffMatchInCSV(rows, "R32", info1.current, info2.current);
                 
-                let p1_display = `${info1.placeholder} (currently: ${info1.current})`;
-                let p2_display = `${info2.placeholder} (currently: ${info2.current})`;
+                let p1_display = `${info1.placeholder} (Proj: ${info1.current})`;
+                let p2_display = `${info2.placeholder} (Proj: ${info2.current})`;
                 let s1 = "", s2 = "", winner = null, isScheduled = false, isFinished = false;
 
                 if (csvMatch) {
@@ -539,7 +538,7 @@
                 statusBadge = '<span class="text-[#d4af37]">Final</span>';
                 borderClass = 'border-amber-500/40';
             } else if (m.isScheduled) {
-                statusBadge = '<span class="text-emerald-500">Live</span>';
+                statusBadge = '<span class="text-emerald-500">Confirmed</span>';
                 borderClass = 'border-emerald-500/40';
             } else if (m.isR32) {
                 statusBadge = '<span>Projected</span>';
@@ -579,7 +578,7 @@
 
             let champMarkup = `
                 <div class="mt-4 bg-gradient-to-br from-amber-500/20 to-yellow-600/10 border-2 border-[#d4af37] rounded-xl p-4 text-center shadow-xl">
-                    <div class="text-[#d4af37] font-black text-xs uppercase tracking-widest mb-1">👑 World Champion</div>
+                    <div class="text-[#d4af37] font-black text-xs uppercase tracking-widest mb-1">👑 Champion</div>
                     <div class="text-lg font-black text-white truncate" title="${champText}">${champText}</div>
                 </div>
             `;
@@ -608,25 +607,27 @@
                 }).join('');
 
                 grid.innerHTML += `
-                    <div class="bg-[#1b263b] rounded-xl border border-slate-800 p-4 shadow-xl hover:border-[#d4af37]/30 transition-all relative">
-                        <div class="flex justify-between items-end mb-3 border-b border-slate-900 pb-2">
-                            <h3 class="text-base font-black text-[#d4af37] uppercase tracking-widest">${gName}</h3>
-                            <a href="${groupLink}" target="_blank" class="text-[10px] bg-slate-800 hover:bg-[#d4af37] hover:text-slate-900 text-gray-300 px-2 py-1 rounded transition-colors font-bold flex items-center gap-1">
-                                Tracker Link ↗
-                            </a>
+                    <div class="bg-[#1b263b] rounded-xl border border-slate-800 p-5 shadow-xl hover:border-slate-700 transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-3 border-b border-slate-800 pb-2">
+                                <h3 class="text-lg font-black uppercase tracking-wider text-[#d4af37]">${gName}</h3>
+                                <a href="${groupLink}" target="_blank" class="text-[10px] bg-slate-900 border border-slate-700 hover:border-[#d4af37] hover:text-[#d4af37] px-2.5 py-1 rounded font-bold uppercase tracking-wider text-gray-400 transition-all">📊 Tracker</a>
+                            </div>
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="text-[10px] tracking-widest uppercase text-gray-500 border-b border-slate-900">
+                                        <th class="py-1 px-1 text-center w-8">#</th>
+                                        <th class="py-1 px-2">Player</th>
+                                        <th class="py-1 px-1 text-center w-8">P</th>
+                                        <th class="py-1 px-1 text-center w-8">Pts</th>
+                                        <th class="py-1 px-2 text-right">Dist</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-xs divide-y divide-slate-900/40">
+                                    ${rowsHtml}
+                                </tbody>
+                            </table>
                         </div>
-                        <table class="w-full text-xs text-left">
-                            <thead>
-                                <tr class="text-gray-400 uppercase tracking-widest text-[10px] border-b border-slate-900 pb-1">
-                                    <th class="pb-2 text-center w-8">#</th>
-                                    <th class="pb-2">Player</th>
-                                    <th class="pb-2 text-center w-8">P</th>
-                                    <th class="pb-2 text-center w-8">PTS</th>
-                                    <th class="pb-2 text-right">Distance</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-900/50">${rowsHtml}</tbody>
-                        </table>
                     </div>
                 `;
             });
@@ -636,20 +637,20 @@
             const tbody = document.getElementById('wildcard-table-body');
             tbody.innerHTML = "";
 
-            appState.runnersUp.forEach((p, idx) => {
-                const advances = idx < 15;
+            appState.runnersUp.forEach((p, i) => {
+                const isSafe = i < 15;
+                const statusBadge = isSafe 
+                    ? '<span class="bg-emerald-950/50 text-emerald-400 border border-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Advance</span>' 
+                    : '<span class="bg-red-950/50 text-red-400 border border-red-900 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Eliminated</span>';
+
                 tbody.innerHTML += `
-                    <tr class="${advances ? 'hover:bg-emerald-500/5' : 'hover:bg-red-500/5'} transition-colors">
-                        <td class="py-3 px-3 font-black ${idx < 15 ? 'text-[#d4af37]' : 'text-gray-500'}">#${idx + 1}</td>
-                        <td class="py-3 px-3 font-bold">${p.name}</td>
-                        <td class="py-3 px-3 text-center text-gray-400 font-semibold">${p.group}</td>
-                        <td class="py-3 px-3 text-center font-black text-white">${p.points}</td>
+                    <tr class="hover:bg-white/[0.01] transition-all ${isSafe ? 'bg-emerald-500/[0.01]' : ''}">
+                        <td class="py-3 px-3 font-mono font-bold">${i + 1}</td>
+                        <td class="py-3 px-3 font-bold text-white">${p.name}</td>
+                        <td class="py-3 px-3 text-center text-gray-400 font-medium">${p.group.replace('Group ', '')}</td>
+                        <td class="py-3 px-3 text-center font-black text-[#d4af37]">${p.points}</td>
                         <td class="py-3 px-3 text-right font-mono text-gray-300">${formatVal(p.distance)}</td>
-                        <td class="py-3 px-4 text-center">
-                            ${advances 
-                                ? '<span class="bg-emerald-950/60 text-emerald-400 px-2.5 py-0.5 rounded-full font-bold text-xs border border-emerald-800">Advancing</span>' 
-                                : '<span class="bg-red-950/60 text-red-400 px-2.5 py-0.5 rounded-full font-bold text-xs border border-red-900">Eliminated</span>'}
-                        </td>
+                        <td class="py-3 px-4 text-center">${statusBadge}</td>
                     </tr>
                 `;
             });
@@ -659,22 +660,35 @@
             const tbody = document.getElementById('matches-table-body');
             tbody.innerHTML = "";
 
-            appState.rawMatches.forEach(row => {
-                const s1 = row['Player 1 Score'];
-                const s2 = row['Player 2 Score'];
-                let scoreBox = `<span class="text-gray-600 font-mono text-xs">vs</span>`;
+            // Display in reverse chronological order if desired, or matching order
+            appState.rawMatches.forEach(m => {
+                const rnd = m['Round'];
+                const grp = m['Group'];
+                const p1 = m['Player 1'];
+                const p2 = m['Player 2'];
+                const s1 = m['Player 1 Score'];
+                const s2 = m['Player 2 Score'];
+                const dt = m['Date Completed'] || '—';
+
+                if (!p1 || !p2) return;
+
+                const stageText = rnd === 'Group' ? grp : rnd;
+                const hasScore = s1 !== "" && s2 !== "";
                 
-                if(s1 !== "" && s2 !== "" && s1 !== undefined && s2 !== undefined) {
-                    scoreBox = `<span class="font-mono text-white text-xs bg-black/40 px-2 py-1 rounded border border-slate-800">${formatScoreStr(s1)} - ${formatScoreStr(s2)}</span>`;
-                }
+                const scoreDisplay = hasScore 
+                    ? `<span class="text-white font-mono font-bold">${formatScoreStr(s1)}</span> <span class="text-gray-600 font-bold px-1">:</span> <span class="text-white font-mono font-bold">${formatScoreStr(s2)}</span>`
+                    : '<span class="text-gray-600 tracking-widest text-[10px] font-bold uppercase">vs</span>';
+
+                const isP1Winner = hasScore && parseFloat(s1) < parseFloat(s2);
+                const isP2Winner = hasScore && parseFloat(s2) < parseFloat(s1);
 
                 tbody.innerHTML += `
-                    <tr class="hover:bg-white/[0.02] transition-colors">
-                        <td class="py-2.5 px-3 text-xs text-gray-400">${row['Date'] || '-'}</td>
-                        <td class="py-2.5 px-3 text-xs text-gray-400 font-bold uppercase tracking-wider">${row['Round'] === 'Group' ? row['Group'] : row['Round']}</td>
-                        <td class="py-2.5 text-right pr-4 font-semibold max-w-[150px] truncate">${row['Player 1']}</td>
-                        <td class="py-2.5 text-center whitespace-nowrap">${scoreBox}</td>
-                        <td class="py-2.5 text-left pl-4 font-semibold max-w-[150px] truncate">${row['Player 2']}</td>
+                    <tr class="hover:bg-white/[0.01] border-b border-slate-900/50 transition-all">
+                        <td class="py-3 px-3 text-xs text-gray-500 whitespace-nowrap">${dt}</td>
+                        <td class="py-3 px-3 text-xs text-gray-400 font-bold uppercase tracking-wider">${stageText}</td>
+                        <td class="py-3 text-right pr-4 font-medium ${isP1Winner ? 'text-[#d4af37] font-black' : 'text-gray-300'} truncate max-w-[150px]" title="${p1}">${p1}</td>
+                        <td class="py-2 text-center bg-black/10 w-28 whitespace-nowrap">${scoreDisplay}</td>
+                        <td class="py-3 text-left pl-4 font-medium ${isP2Winner ? 'text-[#d4af37] font-black' : 'text-gray-300'} truncate max-w-[150px]" title="${p2}">${p2}</td>
                     </tr>
                 `;
             });
