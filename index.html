@@ -668,7 +668,9 @@
                 const p2 = m['Player 2'];
                 const s1 = m['Player 1 Score'];
                 const s2 = m['Player 2 Score'];
-                const dt = m['Date Completed'] || '—';
+                
+                // EDITED: Fallback check to match "Date Completed", "Date", "date", or "DATE"
+                const dt = m['Date Completed'] || m['Date'] || m['date'] || m['DATE'] || '—';
 
                 if (!p1 || !p2) return;
 
