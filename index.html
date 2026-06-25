@@ -177,14 +177,14 @@
             "Group O": "https://www.google.com/maps/d/edit?mid=1fxM7SFt7MS3SF8QiWH0kKM5eYV4-cBk&usp=sharing",
             "Group P": "https://www.google.com/maps/d/edit?mid=11uEhkXHAc2l12ONFh6Z3kRX7HIRLsnU&usp=sharing",
             "Group Q": "https://www.google.com/maps/d/edit?mid=1r66BqDvTbbwyCdmQFAXSjpYpp2VPv40&usp=sharing",
-            "DEFAULT": "#" // Used if a specific group link isn't found
+            "DEFAULT": "#" 
         };
         // ------------------------------------------------------------ //
 
         // Data source mapping
         const CSV_FILE_PATH = "2026 TPG World Cup - Schedule and Results (1).csv";
 
-        let currentUnit = 'km'; // Global unit state
+        let currentUnit = 'km';
 
         let appState = {
             rawMatches: [],
@@ -451,13 +451,23 @@
         // ------------------ TREE BUILD ARCHITECTURE ------------------ //
         function buildPlayoffTree(rows) {
             let globalMatchNum = 103; 
+            
+            // Extract the specific R32 rows to allow fallback matching if both players are '?'
+            let r32CsvRows = rows.filter(r => r['Round'] === 'R32');
 
-            appState.bracket.R32 = R32_TEMPLATE.map(t => {
+            appState.bracket.R32 = R32_TEMPLATE.map((t, index) => {
                 const currentMatchNum = globalMatchNum++;
                 const info1 = resolveSlot(t.p1);
                 const info2 = resolveSlot(t.p2);
                 
-                const csvMatch = findPlayoffMatchInCSV(rows, "R32", info1.current, info2.current);
+                let csvMatch = findPlayoffMatchInCSV(rows, "R32", info1.current, info2.current);
+                
+                // Fallback: If added linearly with '?' placeholders, catch it by row index
+                if (!csvMatch && r32CsvRows[index]) {
+                    if (r32CsvRows[index]['Player 1'] === '?' || r32CsvRows[index]['Player 2'] === '?') {
+                        csvMatch = r32CsvRows[index];
+                    }
+                }
                 
                 let p1_display = `${info1.placeholder} (Proj: ${info1.current})`;
                 let p2_display = `${info2.placeholder} (Proj: ${info2.current})`;
@@ -465,10 +475,25 @@
 
                 if (csvMatch) {
                     isScheduled = true;
-                    p1_display = csvMatch['Player 1'];
-                    p2_display = csvMatch['Player 2'];
+                    let csvP1 = csvMatch['Player 1'];
+                    let csvP2 = csvMatch['Player 2'];
                     s1 = csvMatch['Player 1 Score'];
                     s2 = csvMatch['Player 2 Score'];
+                    
+                    // Determine alignment incase of swapping
+                    let p1IsInfo2 = (csvP1 === info2.current || csvP2 === info1.current);
+
+                    if (p1IsInfo2 && csvP1 !== info1.current && csvP2 !== info2.current) {
+                        p1_display = csvP1 === '?' ? `${info2.placeholder} (Proj: ${info2.current})` : csvP1;
+                        p2_display = csvP2 === '?' ? `${info1.placeholder} (Proj: ${info1.current})` : csvP2;
+                    } else {
+                        p1_display = csvP1 === '?' ? `${info1.placeholder} (Proj: ${info1.current})` : csvP1;
+                        p2_display = csvP2 === '?' ? `${info2.placeholder} (Proj: ${info2.current})` : csvP2;
+                    }
+                    
+                    // Stamp resolved projection strings back on the matched object so renderMatches sees it
+                    csvMatch['_resolved_P1'] = p1_display;
+                    csvMatch['_resolved_P2'] = p2_display;
                     
                     if (s1 !== "" && s2 !== "") {
                         winner = getMatchWinner(csvMatch);
@@ -667,7 +692,8 @@
         function renderMatches() {
             const tbody = document.getElementById('matches-table-body');
             
-            // Filter down to rows that represent concrete played or scheduled matches
+            // Filter down to rows that represent concrete played or scheduled matches. 
+            // '?' will pass this filter, allowing us to render pending projected scheduled rows.
             const validMatches = appState.rawMatches.filter(r => r['Player 1'] && r['Player 2']);
 
             if (validMatches.length === 0) {
@@ -696,13 +722,18 @@
                 }
 
                 let stageLabel = r['Round'] === "Group" ? `Group ${String(r['Group']).replace('Group', '').trim()}` : r['Round'];
+                
+                // Pull resolved values directly out of the row object if it was stamped during bracket assembly
+                let dispP1 = r['_resolved_P1'] || r['Player 1'];
+                let dispP2 = r['_resolved_P2'] || r['Player 2'];
+
                 return `
                     <tr class="hover:bg-slate-800/20 transition-colors">
                         <td class="py-3 px-3 text-xs text-gray-500 font-medium whitespace-nowrap">${r['Date'] || 'TBD'}</td>
                         <td class="py-3 px-3 text-xs text-gray-400 font-bold uppercase tracking-wider">${stageLabel}</td>
-                        <td class="py-3 text-right pr-4 text-sm ${p1Class} truncate max-w-[160px]" title="${r['Player 1']}">${r['Player 1']}</td>
+                        <td class="py-3 text-right pr-4 text-sm ${p1Class} truncate max-w-[160px]" title="${dispP1}">${dispP1}</td>
                         <td class="py-3 text-center bg-black/20 font-mono text-xs text-white font-bold tracking-wider whitespace-nowrap">${scoreDisplay}</td>
-                        <td class="py-3 text-left pl-4 text-sm ${p2Class} truncate max-w-[160px]" title="${r['Player 2']}">${r['Player 2']}</td>
+                        <td class="py-3 text-left pl-4 text-sm ${p2Class} truncate max-w-[160px]" title="${dispP2}">${dispP2}</td>
                     </tr>
                 `;
             }).join('');
