@@ -563,7 +563,7 @@
             if (m.isFinished) {
                 statusBadge = '<span class="text-[#d4af37]">Final</span>';
                 borderClass = 'border-amber-500/40';
-            } else if (m.isScheduled) {
+            } else if (m.isScheduled && isBothResolved) {
                 statusBadge = '<span class="text-emerald-500">Confirmed</span>';
                 borderClass = 'border-emerald-500/40';
             } else if (m.isR32) {
