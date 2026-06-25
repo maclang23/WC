@@ -556,7 +556,7 @@
             const hasScore = m.s1 !== "" && m.s2 !== "";
             const isP1Winner = hasScore && parseFloat(m.s1) < parseFloat(m.s2);
             const isP2Winner = hasScore && parseFloat(m.s2) < parseFloat(m.s1);
-
+            const isBothResolved = m.p1 !== '?' && m.p2 !== '?' && !m.p1.includes('?') && !m.p2.includes('?');
             let statusBadge = '<span class="text-gray-600">Pending</span>';
             let borderClass = 'border-slate-800';
             
