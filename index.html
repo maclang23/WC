@@ -464,8 +464,12 @@
                 
                 // Fallback: If added linearly with '?' placeholders, catch it by row index
                 if (!csvMatch && r32CsvRows[index]) {
-                    if (r32CsvRows[index]['Player 1'] === '?' || r32CsvRows[index]['Player 2'] === '?') {
-                        csvMatch = r32CsvRows[index];
+                    const fallback = r32CsvRows[index];
+                    const p1 = fallback['Player 1']?.trim() || '';
+                    const p2 = fallback['Player 2']?.trim() || '';
+                    if (!(p1 === '?' && p2 === '?')) {
+                        csvMatch = fallback;
+                    
                     }
                 }
                 
@@ -556,7 +560,22 @@
             const hasScore = m.s1 !== "" && m.s2 !== "";
             const isP1Winner = hasScore && parseFloat(m.s1) < parseFloat(m.s2);
             const isP2Winner = hasScore && parseFloat(m.s2) < parseFloat(m.s1);
-            const isBothResolved = m.p1 !== '?' && m.p2 !== '?' && !m.p1.includes('?') && !m.p2.includes('?');
+            const hasUnknownPlayer = (name) => {
+                if (!name) return true;
+
+                const n = name.trim();
+
+                return (
+                    n === '?' ||
+                    n.includes('?') ||
+                    n.startsWith('Winner Group') ||
+                    n.startsWith('2nd Place')
+                );
+            };
+
+            const isBothResolved =
+                !hasUnknownPlayer(m.p1) &&
+                !hasUnknownPlayer(m.p2);
             let statusBadge = '<span class="text-gray-600">Pending</span>';
             let borderClass = 'border-slate-800';
             
@@ -566,8 +585,10 @@
             } else if (m.isScheduled && isBothResolved) {
                 statusBadge = '<span class="text-emerald-500">Confirmed</span>';
                 borderClass = 'border-emerald-500/40';
-            } else if (m.isR32) {
-                statusBadge = '<span>Projected</span>';
+            } else {
+                statusBadge = m.isR32
+                    ? '<span>Projected</span>'
+                    : '<span class="text-gray-600">Pending</span>';
             }
 
             return `
